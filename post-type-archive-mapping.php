@@ -104,16 +104,26 @@ class PostTypeArchiveMapping {
 			$this->gutenberg->run();
 		}
 
+		/**
+		 * Filter to disable archive mapping.
+		 * This is useful if you want to use the blocks but not the archive mapping.
+		 *
+		 * @since 5.1.8
+		 */
+		$ptam_disabled = apply_filters( 'ptam_archive_mapping_disabled', false );
+
 		// Run if page columns are enabled.
-		if ( false === Options::is_page_columns_disabled() && false === Options::is_archive_mapping_disabled() ) {
+		if ( false === Options::is_page_columns_disabled() && false === Options::is_archive_mapping_disabled() && ! $ptam_disabled ) {
 			// Page columns.
 			$this->page_columns = new PTAM\Includes\Admin\Page_Columns();
 			$this->page_columns->run();
 		}
 
-		// Yoast Compatibility.
-		$this->yoast = new PTAM\Includes\Yoast();
-		$this->yoast->run();
+		if ( ! $ptam_disabled ) {
+			// Yoast Compatibility.
+			$this->yoast = new PTAM\Includes\Yoast();
+			$this->yoast->run();
+		}
 
 		// Admin settings.
 		$this->admin_settings = new PTAM\Includes\Admin\Admin_Settings();
@@ -131,8 +141,16 @@ class PostTypeArchiveMapping {
 	 */
 	public function init() {
 
+		/**
+		 * Filter to disable archive mapping.
+		 * This is useful if you want to use the blocks but not the archive mapping.
+		 *
+		 * @since 5.1.8
+		 */
+		$ptam_disabled = apply_filters( 'ptam_archive_mapping_disabled', false );
+
 		// Check if archive mapping is disabled.
-		if ( false === Options::is_archive_mapping_disabled() ) {
+		if ( false === Options::is_archive_mapping_disabled() && ! $ptam_disabled ) {
 			// Archive mapping settings.
 			add_action( 'admin_init', array( $this, 'init_admin_settings' ) );
 			add_action( 'pre_get_posts', array( $this, 'maybe_override_archive' ) );

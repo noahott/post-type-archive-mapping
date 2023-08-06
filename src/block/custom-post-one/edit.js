@@ -37,7 +37,6 @@ const MAX_POSTS_COLUMNS = 6;
 class PTAM_Custom_Posts extends Component {
 	constructor() {
 		super(...arguments);
-
 		this.toggleDisplayPostDate = this.toggleDisplayPostDate.bind(this);
 		this.toggleDisplayPostExcerpt = this.toggleDisplayPostExcerpt.bind(this);
 		this.toggleDisplayPostAuthor = this.toggleDisplayPostAuthor.bind(this);
@@ -69,8 +68,6 @@ class PTAM_Custom_Posts extends Component {
 			avatarSize: this.props.attributes.avatarSize,
 			imageType: this.props.attributes.imageType
 		};
-
-		this.get_latest_data();
 	}
 
 	get_latest_posts(object = {}) {
@@ -622,6 +619,13 @@ class PTAM_Custom_Posts extends Component {
 	};
 	onChangeContinueReadingColor = value => {
 		this.props.setAttributes({ continueReadingColor: value });
+	};
+
+	/**
+	 * Retrieve the latest data when component mounts.
+	 */
+	componentDidMount = () => {
+		this.get_latest_data();
 	};
 
 	render() {
