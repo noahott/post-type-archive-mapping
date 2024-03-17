@@ -103,6 +103,10 @@ class Terms {
 			}
 		}
 
+		if ( empty( $terms_to_include ) ) {
+			return ob_get_clean();
+		}
+
 		// Build Query.
 		$query = array();
 		switch ( $order_by ) {
