@@ -4,7 +4,6 @@
 import classnames from "classnames";
 import axios from "axios";
 import dayjs from "dayjs";
-import { SearchListControl } from "@woocommerce/components/build/search-list-control";
 import Loading from "../components/Loading";
 import hexToRgba from "hex-to-rgba";
 var HtmlToReactParser = require("html-to-react").Parser;

@@ -3,9 +3,9 @@
  */
 import classnames from "classnames";
 import axios from "axios";
-import { SearchListControl } from "@woocommerce/components/build/search-list-control";
 import Loading from "../components/Loading";
 import hexToRgba from "hex-to-rgba";
+import TermListControl from "../components/TermListControl";
 var HtmlToReactParser = require("html-to-react").Parser;
 
 const { Component, Fragment } = wp.element;
@@ -53,10 +53,9 @@ class PTAM_Term_Grid extends Component {
 	}
 
 	getTerms = (object = {}) => {
-		const props = jQuery.extend({}, this.props.attributes, object);
 		let termsList = [];
 		let termsListExclude = [];
-		let { taxonomy } = props;
+		let { taxonomy, terms, termsExclude } = this.props.attributes;
 		this.setState({
 			loading: true,
 		});
@@ -69,10 +68,21 @@ class PTAM_Term_Grid extends Component {
 					termsList.push({
 						id: 0,
 						name: __("All", "post-type-archive-mapping"),
+						selected: terms.length === 0 || terms[0].id === 0,
+					});
+					// Build a list of terms.
+					const excludeTermIds = [];
+					termsExclude.forEach(function (termObject) {
+						excludeTermIds.push(termObject.id);
+					});
+					const includeTermIds = [];
+					terms.forEach(function (termObject) {
+						includeTermIds.push(termObject.id);
 					});
 					jQuery.each(response.data, function (key, value) {
-						termsListExclude.push({ id: value.term_id, name: value.name });
-						termsList.push({ id: value.term_id, name: value.name });
+						// See if term_id matches exclude list.
+						termsListExclude.push({ id: value.term_id, name: value.name, selected: excludeTermIds.includes( value.term_id ) });
+						termsList.push({ id: value.term_id, name: value.name, selected: includeTermIds.includes( value.term_id )});
 					});
 				}
 				this.setState({
@@ -401,9 +411,10 @@ class PTAM_Term_Grid extends Component {
 
 		// Whether to show term exclusion or not.
 		let showTermExclude = false;
-		if (Array.isArray(terms)) {
-			terms.forEach(function (termObject) {
-				if (0 === termObject.id) {
+		const stateTerms = this.state.terms;
+		if (Array.isArray(stateTerms)) {
+			stateTerms.forEach(function (termObject) {
+				if (0 === termObject.id && termObject.selected === true) {
 					showTermExclude = true;
 					return;
 				}
@@ -434,6 +445,7 @@ class PTAM_Term_Grid extends Component {
 								terms: [],
 								termsExclude: [],
 							});
+							this.props.attributes.taxonomy = value;
 							this.getTerms({ taxonomy: value });
 						}}
 					/>
@@ -457,47 +469,38 @@ class PTAM_Term_Grid extends Component {
 							this.displayTerms();
 						}}
 					/>
-					<h2>{__("Terms to Include", "post-type-archive-mapping")}</h2>
-					<SearchListControl
-						className="ptam-term-select"
-						list={this.state.terms}
-						selected={terms}
-						onChange={(value) => {
-							this.props.setAttributes({ terms: value });
-						}}
-						messages={termMessages}
-					/>
-					<Button
-						isSecondary={true}
-						onClick={(event) => {
-							this.displayTerms();
-						}}
-						className="ptam-apply"
-					>
-						{__("Apply", "post-type-archive-mapping")}
-					</Button>
+					{
+						this.state.terms.length > 0 && (
+							<>
+								<h2>{__("Terms to Include", "post-type-archive-mapping")}</h2>
+								<TermListControl
+									className="ptam-term-select"
+									terms={this.state.terms}
+									onChange={(newTerms) => {
+										this.props.setAttributes({ terms: newTerms });
+										this.props.attributes.terms = newTerms;
+										this.displayTerms();
+									}}
+									hasSelectAll={ true }
+								/>
+							</>
+						)
+					}
+					
 
 					{showTermExclude && (
 						<Fragment>
 							<h2>{__("Terms to Exclude", "post-type-archive-mapping")}</h2>
-							<SearchListControl
+							<TermListControl
 								className="ptam-term-exclude"
-								list={this.state.termsExclude}
-								selected={termsExclude}
-								onChange={(value) => {
-									this.props.setAttributes({ termsExclude: value });
+								terms={this.state.termsExclude}
+								onChange={(newTerms) => {
+									this.props.setAttributes({ termsExclude: newTerms });
+									this.props.attributes.termsExclude = newTerms;
+									this.displayTerms();
 								}}
 								messages={termMessagesExclude}
 							/>
-							<Button
-								isSecondary={true}
-								onClick={(event) => {
-									this.displayTerms();
-								}}
-								className="ptam-apply"
-							>
-								{__("Apply", "post-type-archive-mapping")}
-							</Button>
 						</Fragment>
 					)}
 				</PanelBody>

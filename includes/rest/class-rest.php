@@ -170,6 +170,10 @@ class Rest {
 		// Populate terms to display.
 		$display_all_terms = false;
 		$terms_to_include  = array();
+		if ( empty( $terms ) ) {
+			$display_all_terms = true;
+			$terms_to_include  = $all_term_ids;
+		}
 		foreach ( $terms as $index => $term_id ) {
 			if ( 0 === $term_id ) {
 				$display_all_terms = true;
@@ -186,6 +190,9 @@ class Rest {
 				if ( in_array( $term_id, $terms_exclude, true ) ) {
 					unset( $terms_to_include[ $index ] );
 				}
+			}
+			if ( empty( $terms_to_include ) ) {
+				die( wp_json_encode( array( 'term_data' => new \stdClass() ) ) );
 			}
 		}
 
@@ -232,7 +239,7 @@ class Rest {
 				);
 				break;
 		}
-		if ( empty( $terms ) || ! is_array( $terms ) ) {
+		if ( ( empty( $terms ) || ! is_array( $terms ) ) && empty( $terms_to_include ) ) {
 			die( wp_json_encode( array( 'term_data' => new \stdClass() ) ) );
 		}
 
