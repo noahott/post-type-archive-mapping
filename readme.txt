@@ -3,13 +3,13 @@ Contributors: ronalfy, chrislogan, paaljoachim
 Tags: map pages, archives, post type block, 404 page, category grid
 Requires at least: 5.5
 Requires PHP: 5.6
-Tested up to: 6.5
-Stable tag: 5.2.0
+Tested up to: 6.6
+Stable tag: 5.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://github.com/MediaRon/post-type-archive-mapping
 
-Map your post type and category archives to a page, and also map your 404 template to a page as well. Three helper blocks allow you to display a post grid, a term (category) grid, and posts by category.
+Map your archives to pages. Map 404 and term archives as well.
 
 == Description ==
 
@@ -60,6 +60,10 @@ This plugin also allows you to map your term archives to a page. Just create a p
 === 404 Page Mapping ===
 
 This plugin allows you to map a page to your 404 template, so you can customize a 404 page as needed.
+
+=== Development is on GitHub ===
+
+<a href="https://github.com/MediaRon/post-type-archive-mapping">Development is on GitHub</a>
 
 == Installation ==
 
@@ -113,6 +117,11 @@ Yes, just post in the support forums here and I'll do my best to address your is
 5. Term archive option.
 
 == Changelog ==
+
+= 5.3.0 =
+* Released TBD
+* Hardening REST APIs based on security report from the WordPress security team.
+* This is a security release and we recommend updating as soon as possible.
 
 = 5.2.0 =
 * Released 2024-03-17
@@ -347,5 +356,5 @@ Yes, just post in the support forums here and I'll do my best to address your is
 
 == Upgrade Notice ==
 
-= 5.2.0 =
-Fixing a bug in the Term Grid block where the SearchListControl in Woo Components was throwing an error, so the component was reworked.
+= 5.3.0 =
+Fixing a security issue with the REST API and retrieving post data.
