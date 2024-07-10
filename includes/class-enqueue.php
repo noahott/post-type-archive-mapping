@@ -7,8 +7,8 @@
 
 namespace PTAM\Includes;
 
-use PTAM\Includes\Functions as Functions;
-use PTAM\Includes\Admin\Options as Options;
+use PTAM\Includes\Functions;
+use PTAM\Includes\Admin\Options;
 
 /**
  * Class enqueue
@@ -130,6 +130,7 @@ class Enqueue {
 				'featured_posts_block_preview' => esc_url( \PostTypeArchiveMapping::get_plugin_url( 'img/featured-posts-block.jpg' ) ),
 				'wpml_installed'               => defined( 'ICL_SITEPRESS_VERSION' ) ? true : false,
 				'wpml_languages'               => $wpml_languages,
+				'rest_nonce'                   => wp_create_nonce( 'wp_rest' ),
 			)
 		);
 		wp_set_script_translations( 'ptam-custom-posts-gutenberg', 'post-type-archive-mapping' );

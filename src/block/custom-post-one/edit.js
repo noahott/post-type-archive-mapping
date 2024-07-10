@@ -104,6 +104,11 @@ class PTAM_Custom_Posts extends Component {
 				link_color: linkColor,
 				default_image: fallbackImg,
 				language: wpmlLanguage,
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then(response => {
 				// Now Set State
@@ -126,6 +131,11 @@ class PTAM_Custom_Posts extends Component {
 			.post(ptam_globals.rest_url + `ptam/v2/get_terms`, {
 				taxonomy: taxonomy,
 				post_type: postType
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then(response => {
 				if (Object.keys(response.data).length > 0) {
@@ -133,7 +143,7 @@ class PTAM_Custom_Posts extends Component {
 						value: 0,
 						label: __("All", "post-type-archive-mapping")
 					});
-					jQuery.each(response.data, function(key, value) {
+					jQuery.each(response.data, function (key, value) {
 						termsList.push({ value: value.term_id, label: value.name });
 					});
 				}
@@ -189,6 +199,11 @@ class PTAM_Custom_Posts extends Component {
 				link_color: linkColor,
 				default_image: fallbackImg,
 				language: wpmlLanguage,
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then(response => {
 				latestPosts = response.data.posts;
@@ -198,7 +213,7 @@ class PTAM_Custom_Posts extends Component {
 
 				// Get Post Types
 				axios.get(ptam_globals.rest_url + "wp/v2/types").then(response => {
-					jQuery.each(response.data, function(key, value) {
+					jQuery.each(response.data, function (key, value) {
 						if ("attachment" != key && "wp_block" != key) {
 							postTypeList.push({ value: key, label: value.name });
 						}
@@ -209,6 +224,11 @@ class PTAM_Custom_Posts extends Component {
 						.post(ptam_globals.rest_url + `ptam/v2/get_terms`, {
 							taxonomy: taxonomy,
 							post_type: postType
+						}, {
+							headers: {
+								"X-WP-Nonce": ptam_globals.rest_nonce
+							}
+
 						})
 						.then(response => {
 							if (Object.keys(response.data).length > 0) {
@@ -216,7 +236,7 @@ class PTAM_Custom_Posts extends Component {
 									value: 0,
 									label: __("All", "post-type-archive-mapping")
 								});
-								jQuery.each(response.data, function(key, value) {
+								jQuery.each(response.data, function (key, value) {
 									termsList.push({ value: value.term_id, label: value.name });
 								});
 							}
@@ -225,6 +245,11 @@ class PTAM_Custom_Posts extends Component {
 							axios
 								.post(ptam_globals.rest_url + `ptam/v2/get_taxonomies`, {
 									post_type: postType
+								}, {
+									headers: {
+										"X-WP-Nonce": ptam_globals.rest_nonce
+									}
+
 								})
 								.then(response => {
 									if (Object.keys(response.data).length > 0) {
@@ -235,7 +260,7 @@ class PTAM_Custom_Posts extends Component {
 												"post-type-archive-mapping"
 											)
 										});
-										jQuery.each(response.data, function(key, value) {
+										jQuery.each(response.data, function (key, value) {
 											taxonomyList.push({ value: key, label: value.label });
 										});
 									}
@@ -408,6 +433,11 @@ class PTAM_Custom_Posts extends Component {
 				link_color: linkColor,
 				default_image: fallbackImg,
 				language: wpmlLanguage,
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then(response => {
 				latestPosts = response.data.posts;
@@ -460,7 +490,12 @@ class PTAM_Custom_Posts extends Component {
 				link_color: linkColor,
 				default_image: fallbackImg,
 				language: wpmlLanguage,
-			})
+			},  {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
+			} )
 			.then(response => {
 				latestPosts = response.data.posts;
 				imageSizes = response.data.image_sizes;
@@ -488,7 +523,7 @@ class PTAM_Custom_Posts extends Component {
 			loading: true
 		});
 		this.props.setAttributes({ avatarSize: value });
-		setTimeout(function() {
+		setTimeout(function () {
 			let latestPosts = [];
 			let imageSizes = [];
 
@@ -525,7 +560,12 @@ class PTAM_Custom_Posts extends Component {
 					link_color: linkColor,
 					default_image: fallbackImg,
 					language: wpmlLanguage,
-				})
+				},  {
+					headers: {
+						"X-WP-Nonce": ptam_globals.rest_nonce
+					}
+	
+				} )
 				.then(response => {
 					latestPosts = response.data.posts;
 					imageSizes = response.data.image_sizes;
@@ -545,7 +585,7 @@ class PTAM_Custom_Posts extends Component {
 		});
 
 		this.props.setAttributes({ fallbackImg: imgObject });
-		setTimeout(function() {
+		setTimeout(function () {
 			let latestPosts = [];
 			let imageSizes = [];
 
@@ -583,7 +623,12 @@ class PTAM_Custom_Posts extends Component {
 					link_color: linkColor,
 					default_image: fallbackImg,
 					language: wpmlLanguage,
-				})
+				},  {
+					headers: {
+						"X-WP-Nonce": ptam_globals.rest_nonce
+					}
+	
+				} )
 				.then(response => {
 					latestPosts = response.data.posts;
 					imageSizes = response.data.image_sizes;
@@ -629,8 +674,8 @@ class PTAM_Custom_Posts extends Component {
 	};
 
 	render() {
-		if ( this.props.attributes.preview ) {
-			return(
+		if (this.props.attributes.preview) {
+			return (
 				<Fragment>
 					<img src={ptam_globals.custom_posts_block_preview} />
 				</Fragment>
@@ -1094,7 +1139,7 @@ class PTAM_Custom_Posts extends Component {
 						checked={displayPostDate}
 						onChange={this.toggleDisplayPostDate}
 					/>
-					{ 'full_content' !== postLayout &&
+					{'full_content' !== postLayout &&
 						<Fragment>
 							<ToggleControl
 								label={__("Display Post Excerpt", "post-type-archive-mapping")}
@@ -1378,7 +1423,7 @@ class PTAM_Custom_Posts extends Component {
 					<Placeholder>
 						<div className="ptam-loading">
 							<h1>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 315.23 341.25" width="42" height="42"><polygon points="315.23 204.75 315.23 68.25 197.02 0 197.02 136.5 315.23 204.75" style={{fill: "#ffdd01",opacity:0.8}} /><polygon points="0 204.75 0 68.25 118.21 0 118.21 136.5 0 204.75" style={{fill: "#2e3192",opacity:0.8}} /><polygon points="157.62 159.25 275.83 91 157.62 22.75 39.4 91 157.62 159.25" style={{fill:"#86cedc",opacity:0.8}}/><polygon points="157.62 341.25 275.83 273 157.62 204.75 39.4 273 157.62 341.25" style={{fill:"#f07f3b", opacity:0.8}} /><polygon points="177.32 170.62 295.53 102.37 295.53 238.87 177.32 307.12 177.32 170.62" style={{fill:"#c10a26",opacity:0.8}}/><polygon points="137.91 170.62 19.7 102.37 19.7 238.87 137.91 307.12 137.91 170.62" style={{fill:"#662583",opacity:0.8}} /></svg>{" "}
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 315.23 341.25" width="42" height="42"><polygon points="315.23 204.75 315.23 68.25 197.02 0 197.02 136.5 315.23 204.75" style={{ fill: "#ffdd01", opacity: 0.8 }} /><polygon points="0 204.75 0 68.25 118.21 0 118.21 136.5 0 204.75" style={{ fill: "#2e3192", opacity: 0.8 }} /><polygon points="157.62 159.25 275.83 91 157.62 22.75 39.4 91 157.62 159.25" style={{ fill: "#86cedc", opacity: 0.8 }} /><polygon points="157.62 341.25 275.83 273 157.62 204.75 39.4 273 157.62 341.25" style={{ fill: "#f07f3b", opacity: 0.8 }} /><polygon points="177.32 170.62 295.53 102.37 295.53 238.87 177.32 307.12 177.32 170.62" style={{ fill: "#c10a26", opacity: 0.8 }} /><polygon points="137.91 170.62 19.7 102.37 19.7 238.87 137.91 307.12 137.91 170.62" style={{ fill: "#662583", opacity: 0.8 }} /></svg>{" "}
 								{__("Custom Posts", "post-type-archive-mapping")}
 							</h1>
 							<h2>
@@ -1507,9 +1552,9 @@ class PTAM_Custom_Posts extends Component {
 								style={!removeStyles ? borderPaddingStyles : {}}
 							>
 								{displayPostImage &&
-								post.featured_image_src !== undefined &&
-								post.featured_image_src &&
-								"regular" === this.state.imageLocation ? (
+									post.featured_image_src !== undefined &&
+									post.featured_image_src &&
+									"regular" === this.state.imageLocation ? (
 									<div
 										className="ptam-block-post-grid-image"
 										style={!removeStyles ? imageAlignmentStyles : {}}
@@ -1534,21 +1579,21 @@ class PTAM_Custom_Posts extends Component {
 													style={!removeStyles ? titleColorStyles : {}}
 												>
 													{decodeEntities(post.post_title.trim()) ||
-													__("(Untitled)", "post-type-archive-mapping")}
+														__("(Untitled)", "post-type-archive-mapping")}
 												</a>
 											}
 											{false === displayTitleLink &&
 												<Fragment>
-												{decodeEntities(post.post_title.trim()) ||
-												__("(Untitled)", "post-type-archive-mapping")}
+													{decodeEntities(post.post_title.trim()) ||
+														__("(Untitled)", "post-type-archive-mapping")}
 												</Fragment>
 											}
 										</Titletag>
 									)}
 									{displayPostImage &&
-									post.featured_image_src !== undefined &&
-									post.featured_image_src &&
-									"below_title" === this.state.imageLocation ? (
+										post.featured_image_src !== undefined &&
+										post.featured_image_src &&
+										"below_title" === this.state.imageLocation ? (
 										<div
 											className="ptam-block-post-grid-image"
 											style={!removeStyles ? imageAlignmentStyles : {}}
@@ -1621,9 +1666,9 @@ class PTAM_Custom_Posts extends Component {
 												</div>
 											)}
 										{displayPostImage &&
-										post.featured_image_src !== undefined &&
-										post.featured_image_src &&
-										"below_title_and_meta" === this.state.imageLocation ? (
+											post.featured_image_src !== undefined &&
+											post.featured_image_src &&
+											"below_title_and_meta" === this.state.imageLocation ? (
 											<div
 												className="ptam-block-post-grid-image"
 												style={!removeStyles ? imageAlignmentStyles : {}}
@@ -1664,9 +1709,9 @@ class PTAM_Custom_Posts extends Component {
 											</p>
 										)}
 										{displayPostImage &&
-										post.featured_image_src !== undefined &&
-										post.featured_image_src &&
-										"bottom" === this.state.imageLocation ? (
+											post.featured_image_src !== undefined &&
+											post.featured_image_src &&
+											"bottom" === this.state.imageLocation ? (
 											<div
 												className="ptam-block-post-grid-image"
 												style={!removeStyles ? imageAlignmentStyles : {}}

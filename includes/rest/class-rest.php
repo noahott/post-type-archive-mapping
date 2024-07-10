@@ -7,7 +7,7 @@
 
 namespace PTAM\Includes\Rest;
 
-use PTAM\Includes\Functions as Functions;
+use PTAM\Includes\Functions;
 
 /**
  * Class functions
@@ -28,63 +28,77 @@ class Rest {
 			'ptam/v2',
 			'/get_terms',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_all_terms' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_all_terms' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_posts',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_posts' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_posts' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_taxonomies',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_taxonomies' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_taxonomies' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_images',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_image' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_image' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_tax_terms',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_tax_terms' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_tax_terms' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_tax_term_data',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_tax_term_data' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_tax_term_data' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 		register_rest_route(
 			'ptam/v2',
 			'/get_featured_posts',
 			array(
-				'methods'  => 'POST',
-				'callback' => array( $this, 'get_featured_posts' ),
-				'permission_callback' => '__return_true',
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'get_featured_posts' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			)
 		);
 	}
@@ -335,6 +349,7 @@ class Rest {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				global $post;
+				$new_post = new \stdClass();
 				$query->the_post();
 				if ( 'gravatar' === $image_type ) {
 					$thumbnail = get_avatar( $post->post_author, $avatar_size );
@@ -344,17 +359,18 @@ class Rest {
 						$thumbnail = wp_get_attachment_image( $default_image, $image_size );
 					}
 				}
-				$post->featured_image_src = $thumbnail;
+				$new_post->featured_image_src = $thumbnail;
 
 				// Get author information.
 				$display_name = get_the_author_meta( 'display_name', $post->post_author );
 				$author_url   = get_author_posts_url( $post->post_author );
 
-				$post->author_info               = new \stdClass();
-				$post->author_info->display_name = $display_name;
-				$post->author_info->author_link  = $author_url;
+				$new_post->author_info               = new \stdClass();
+				$new_post->author_info->display_name = $display_name;
+				$new_post->author_info->author_link  = $author_url;
+				$new_post->post_title                = get_the_title( $post->ID );
 
-				$post->link = get_permalink( $post->ID );
+				$new_post->link = get_permalink( $post->ID );
 
 				// Get taxonomy information.
 				$taxonomies = get_object_taxonomies( $post->post_type, 'objects' );
@@ -376,19 +392,19 @@ class Rest {
 						$terms[ $key ] = false;
 					}
 				}
-				$post->terms = $terms;
+				$new_post->terms = $terms;
 
 				if ( empty( $post->post_excerpt ) ) {
-					$post->post_excerpt = apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $post->post_content ) ) );
+					$new_post->post_excerpt = apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $new_post->post_content ) ) );
 				}
 
 				if ( ! $post->post_excerpt ) {
-					$post->post_excerpt = null;
+					$new_post->post_excerpt = null;
 				}
 
-				$post->post_excerpt = wp_kses_post( $post->post_excerpt );
-				$post->post_content = apply_filters( 'ptam_the_content', $post->post_content );
-				$posts[]            = $post;
+				$new_post->post_excerpt = wp_kses_post( $post->post_excerpt );
+				$new_post->post_content = apply_filters( 'ptam_the_content', $post->post_content );
+				$posts[]                = $new_post;
 			}
 		}
 		$return = array(
@@ -435,8 +451,10 @@ class Rest {
 		}
 		$posts = get_posts( $post_args );
 
-		foreach ( $posts as &$post ) {
+		$post_to_return = array();
 
+		foreach ( $posts as &$post ) {
+			$new_post = new \stdClass();
 			if ( 'gravatar' === $image_type ) {
 				$thumbnail = get_avatar( $post->post_author, $avatar_size );
 			} else {
@@ -445,17 +463,18 @@ class Rest {
 					$thumbnail = wp_get_attachment_image( $default_image, $image_size );
 				}
 			}
-			$post->featured_image_src = $thumbnail;
+			$new_post->featured_image_src = $thumbnail;
 
 			// Get author information.
 			$display_name = get_the_author_meta( 'display_name', $post->post_author );
 			$author_url   = get_author_posts_url( $post->post_author );
 
-			$post->author_info               = new \stdClass();
-			$post->author_info->display_name = $display_name;
-			$post->author_info->author_link  = $author_url;
+			$new_post->author_info               = new \stdClass();
+			$new_post->author_info->display_name = $display_name;
+			$new_post->author_info->author_link  = $author_url;
+			$new_post->post_title                = get_the_title( $post->ID );
 
-			$post->link = get_permalink( $post->ID );
+			$new_post->link = get_permalink( $post->ID );
 
 			// Get taxonomy information.
 			$taxonomies = get_object_taxonomies( $post->post_type, 'objects' );
@@ -474,18 +493,20 @@ class Rest {
 			}
 
 			if ( empty( $post->post_excerpt ) ) {
-				$post->post_excerpt = wp_trim_words( apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $post->post_content ) ) ), 55 );
+				$new_post->post_excerpt = wp_trim_words( apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $post->post_content ) ) ), 55 );
 			}
 
 			if ( ! $post->post_excerpt ) {
-				$post->post_excerpt = null;
+				$new_post->post_excerpt = null;
 			}
 
-			$post->post_excerpt = wp_kses_post( $post->post_excerpt );
-			$post->post_content = apply_filters( 'ptam_the_content', $post->post_content );
+			$new_post->post_excerpt = wp_kses_post( $post->post_excerpt );
+			$new_post->post_content = apply_filters( 'ptam_the_content', $post->post_content );
+
+			$post_to_return[] = $new_post;
 		}
 		$return = array(
-			'posts'      => $posts,
+			'posts'      => $post_to_return,
 			'taxonomies' => $taxonomies,
 			'terms'      => $terms,
 		);
@@ -539,6 +560,7 @@ class Rest {
 		if ( $query->have_posts() ) {
 			while ( $query->have_posts() ) {
 				global $post;
+				$new_post = new \stdClass();
 				$query->the_post();
 				$thumbnail = '';
 				if ( 'gravatar' === $image_type ) {
@@ -549,17 +571,18 @@ class Rest {
 						$thumbnail = wp_get_attachment_image( $default_image, $image_size );
 					}
 				}
-				$post->featured_image_src = $thumbnail;
+				$new_post->featured_image_src = $thumbnail;
 
 				// Get author information.
 				$display_name = get_the_author_meta( 'display_name', $post->post_author );
 				$author_url   = get_author_posts_url( $post->post_author );
 
-				$post->author_info               = new \stdClass();
-				$post->author_info->display_name = $display_name;
-				$post->author_info->author_link  = $author_url;
+				$new_post->author_info               = new \stdClass();
+				$new_post->author_info->display_name = $display_name;
+				$new_post->author_info->author_link  = $author_url;
+				$new_post->post_title                = get_the_title( $post->ID );
 
-				$post->link = get_permalink( $post->ID );
+				$new_post->link = get_permalink( $post->ID );
 
 				// Get taxonomy information.
 				$taxonomies = get_object_taxonomies( $post->post_type, 'objects' );
@@ -581,19 +604,19 @@ class Rest {
 						$terms[ $key ] = false;
 					}
 				}
-				$post->terms = $terms;
+				$new_post->terms = $terms;
 
 				// Get excerpt.
 				if ( empty( $post->post_excerpt ) ) {
-					$post->post_excerpt = apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $post->post_content ) ) );
+					$new_post->post_excerpt = apply_filters( 'the_excerpt', wp_strip_all_tags( strip_shortcodes( $post->post_content ) ) );
 				}
 
 				if ( ! $post->post_excerpt ) {
-					$post->post_excerpt = null;
+					$new_post->post_excerpt = null;
 				}
 
-				$post->post_excerpt = wp_kses_post( $post->post_excerpt );
-				$posts[]            = $post;
+				$new_post->post_excerpt = wp_kses_post( $post->post_excerpt );
+				$posts[]                = $new_post;
 			}
 		}
 		$return = array(

@@ -62,6 +62,11 @@ class PTAM_Term_Grid extends Component {
 		axios
 			.post(ptam_globals.rest_url + `ptam/v2/get_tax_terms`, {
 				taxonomy: taxonomy,
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then((response) => {
 				if (Object.keys(response.data).length > 0) {
@@ -126,7 +131,12 @@ class PTAM_Term_Grid extends Component {
 				backgroundImageSource: backgroundImageSource,
 				backgroundImageFallback: backgroundImageFallback,
 				backgroundImageMeta: backgroundImageMeta,
-			})
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
+			} )
 			.then((response) => {
 				if (Object.keys(response.data).length > 0) {
 					this.setState({

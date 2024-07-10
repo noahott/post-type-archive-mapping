@@ -72,6 +72,11 @@ class PTAM_Featured_Posts extends Component {
 			.post(ptam_globals.rest_url + `ptam/v2/get_terms`, {
 				taxonomy: taxonomy,
 				post_type: postType
+			},{
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
 			})
 			.then(response => {
 				if (Object.keys(response.data).length > 0) {
@@ -119,7 +124,12 @@ class PTAM_Featured_Posts extends Component {
 				image_type: imageType,
 				image_size: imageTypeSize,
 				default_image: fallbackImg
-			})
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
+			} )
 			.then(response => {
 				// Now Set State
 				this.setState({
@@ -167,7 +177,12 @@ class PTAM_Featured_Posts extends Component {
 				image_type: imageType,
 				image_size: imageTypeSize,
 				default_image: fallbackImg,
-			})
+			}, {
+				headers: {
+					"X-WP-Nonce": ptam_globals.rest_nonce
+				}
+
+			} )
 			.then((response) => {
 				latestPosts = response.data.posts;
 				userTaxonomies = response.data.taxonomies;
@@ -178,7 +193,12 @@ class PTAM_Featured_Posts extends Component {
 					.post(ptam_globals.rest_url + `ptam/v2/get_terms`, {
 						taxonomy: taxonomy,
 						post_type: postType,
-					})
+					}, {
+						headers: {
+							"X-WP-Nonce": ptam_globals.rest_nonce
+						}
+		
+					} )
 					.then((response) => {
 						if (Object.keys(response.data).length > 0) {
 							termsList.push({
@@ -194,7 +214,12 @@ class PTAM_Featured_Posts extends Component {
 						axios
 							.post(ptam_globals.rest_url + `ptam/v2/get_taxonomies`, {
 								post_type: postType,
-							})
+							}, {
+								headers: {
+									"X-WP-Nonce": ptam_globals.rest_nonce
+								}
+				
+							} )
 							.then((response) => {
 								if (Object.keys(response.data).length > 0) {
 									taxonomyList.push({
