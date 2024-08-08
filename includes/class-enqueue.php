@@ -8,6 +8,7 @@
 namespace PTAM\Includes;
 
 use PTAM\Includes\Functions as Functions;
+use PTAM\Includes\Admin\Options as Options;
 
 /**
  * Class enqueue
@@ -18,8 +19,14 @@ class Enqueue {
 	 * Main init functioin.
 	 */
 	public function run() {
-		add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_assets' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
+
+		// Check if blocks are disabled.
+		if ( false === Options::is_blocks_disabled() ) {
+			add_action( 'enqueue_block_assets', array( $this, 'enqueue_block_assets' ) );
+			add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_block_editor_assets' ) );
+		}
+
+		// Enqueue general admin scripts.
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ), 10, 1 );
 	}
 
@@ -29,7 +36,7 @@ class Enqueue {
 	 * @param string $hook The page hook name.
 	 */
 	public function admin_scripts( $hook ) {
-		if ( 'options-reading.php' !== $hook ) {
+		if ( 'options-reading.php' !== $hook && 'settings_page_custom-query-blocks' !== $hook ) {
 			return;
 		}
 		wp_enqueue_style(
@@ -64,7 +71,7 @@ class Enqueue {
 		);
 		wp_register_script(
 			'ptam-custom-posts-gutenberg',
-			\PostTypeArchiveMapping::get_plugin_url( 'dist/blocks.js' ),
+			\PostTypeArchiveMapping::get_plugin_url( 'build/index.js' ),
 			array( 'wp-blocks', 'wp-element' ),
 			PTAM_VERSION,
 			true

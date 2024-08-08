@@ -69,6 +69,10 @@ class Terms {
 		$display_all_terms = false;
 		$terms_to_include  = array();
 		foreach ( $terms as $index => $term_data ) {
+			// Skip over empty term data.
+			if ( empty( $term_data ) ) {
+				continue;
+			}
 			if ( ! isset( $term_data['id'] ) ) {
 				$display_all_terms = true;
 				$terms_to_include  = $all_term_ids;
@@ -332,7 +336,7 @@ class Terms {
 			<?php
 			foreach ( $raw_term_results as $index => $term ) {
 				?>
-				<div class="ptam-term-grid-item" 
+				<div class="ptam-term-grid-item"
 					<?php
 					if ( ! $attributes['disableStyles'] && 'image' === $attributes['backgroundType'] ) {
 						$background_image = Functions::get_term_image( $attributes['imageSize'], $attributes['backgroundImageMeta'], $attributes['backgroundImageSource'], $taxonomy, $term->term_id );
@@ -412,199 +416,8 @@ class Terms {
 		}
 
 		register_block_type(
-			'ptam/term-grid',
-			array(
-				'attributes'      => array(
-					'taxonomy'                       => array(
-						'type'    => 'string',
-						'default' => 'category',
-					),
-					'terms'                          => array(
-						'type'    => 'array',
-						'default' => array( '' ),
-					),
-					'termsExclude'                   => array(
-						'type'    => 'array',
-						'default' => array( '' ),
-					),
-					'order'                          => array(
-						'type'    => 'string',
-						'default' => 'desc',
-					),
-					'orderBy'                        => array(
-						'type'    => 'string',
-						'default' => 'name',
-					),
-					'align'                          => array(
-						'type'    => 'string',
-						'default' => 'full',
-					),
-					'columns'                        => array(
-						'type'    => 'integer',
-						'default' => 2,
-					),
-					'showTermTitle'                  => array(
-						'type'    => 'boolean',
-						'default' => true,
-					),
-					'showTermDescription'            => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'disableStyles'                  => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'linkContainer'                  => array(
-						'type'    => 'boolean',
-						'default' => true,
-					),
-					'linkTermTitle'                  => array(
-						'type'    => 'boolean',
-						'default' => true,
-					),
-					'showButton'                     => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-					'backgroundImageSource'          => array(
-						'type'    => 'string',
-						'default' => 'meta',
-					),
-					'backgroundImageMeta'            => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'backgroundImageFallback'        => array(
-						'type'    => 'object',
-						'default' => '',
-					),
-					'imageSize'                      => array(
-						'type'    => 'string',
-						'default' => 'large',
-					),
-					'containerId'                    => array(
-						'type'    => 'string',
-						'default' => 'ptam-term-grid-wrapper',
-					),
-					'backgroundType'                 => array(
-						'type'    => 'string',
-						'default' => 'color',
-					),
-					'backgroundColor'                => array(
-						'type'    => 'string',
-						'default' => '#32373c',
-					),
-					'backgroundColorHover'           => array(
-						'type'    => 'string',
-						'default' => '#32373c',
-					),
-					'backgroundGradient'             => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'backgroundGradientHover'        => array(
-						'type'    => 'string',
-						'default' => '',
-					),
-					'overlayColor'                   => array(
-						'type'    => 'string',
-						'default' => '#000000',
-					),
-					'overlayColorHover'              => array(
-						'type'    => 'string',
-						'default' => '#000000',
-					),
-					'overlayOpacity'                 => array(
-						'type'    => 'number',
-						'default' => 0.3,
-					),
-					'overlayOpacityHover'            => array(
-						'type'    => 'number',
-						'default' => 0.5,
-					),
-					'termTitleColor'                 => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'termTitleColorHover'            => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'termDescriptionColor'           => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'termDescriptionColorHover'      => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'itemBorder'                     => array(
-						'type'    => 'integer',
-						'default' => 0,
-					),
-					'itemBorderColor'                => array(
-						'type'    => 'string',
-						'default' => '#000000',
-					),
-					'itemBorderRadius'               => array(
-						'type'    => 'integer',
-						'default' => 0,
-					),
-					'termTitleFont'                  => array(
-						'type'    => 'string',
-						'default' => 'Arial',
-					),
-					'termDescriptionFont'            => array(
-						'type'    => 'string',
-						'default' => 'Arial',
-					),
-					'termButtonText'                 => array(
-						'type'    => 'string',
-						'default' => __( 'Learn More...', 'post-type-archive-mapping' ),
-					),
-					'termButtonFont'                 => array(
-						'type'    => 'string',
-						'default' => 'Arial',
-					),
-					'termButtonTextColor'            => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'termButtonTextHoverColor'       => array(
-						'type'    => 'string',
-						'default' => '#FFFFFF',
-					),
-					'termButtonBackgroundColor'      => array(
-						'type'    => 'string',
-						'default' => '#32373c',
-					),
-					'termButtonBackgroundHoverColor' => array(
-						'type'    => 'string',
-						'default' => '#000000',
-					),
-					'termButtonBorder'               => array(
-						'type'    => 'integer',
-						'default' => 0,
-					),
-					'termButtonBorderColor'          => array(
-						'type'    => 'string',
-						'default' => '#000000',
-					),
-					'termButtonBorderRadius'         => array(
-						'type'    => 'integer',
-						'default' => 28,
-					),
-					'preview'                        => array(
-						'type'    => 'boolean',
-						'default' => false,
-					),
-
-				),
-				'render_callback' => array( $this, 'term_grid' ),
-				'editor_script'   => 'ptam-custom-posts-gutenberg',
-				'editor_style'    => 'ptam-style-editor-css',
-			)
+			Functions::get_plugin_dir( 'build/block/term-grid/block.json' ),
+			array( 'render_callback' => array( $this, 'output' ) ),
 		);
 	}
 }

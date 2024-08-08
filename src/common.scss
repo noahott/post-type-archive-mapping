@@ -5,12 +5,12 @@
 
  @font-face {
   font-family: 'PTAM';
-  src: url('./fonts/ptam.eot'); /* IE9 Compat Modes */
-  src: url('./fonts/ptam.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('./fonts/ptam.woff2') format('woff2'), /* Super Modern Browsers */
-       url('./fonts/ptam.woff') format('woff'), /* Pretty Modern Browsers */
-       url('./fonts/ptam.ttf')  format('truetype'), /* Safari, Android, iOS */
-       url('./fonts/ptam.svg#svgFontName') format('svg'); /* Legacy iOS */
+  src: url('../fonts/ptam.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/ptam.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/ptam.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/ptam.woff') format('woff'), /* Pretty Modern Browsers */
+       url('../fonts/ptam.ttf')  format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/ptam.svg#svgFontName') format('svg'); /* Legacy iOS */
 }
 
 // Variables

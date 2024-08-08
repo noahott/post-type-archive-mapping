@@ -29,7 +29,7 @@ const {
 	InspectorControls,
 	BlockAlignmentToolbar,
 	BlockControls,
-	PanelColorSettings
+	PanelColorSettings,
 } = wp.blockEditor;
 
 const MAX_POSTS_COLUMNS = 6;
@@ -806,6 +806,8 @@ class PTAM_Custom_Posts extends Component {
 			backgroundColor: backgroundColor
 		};
 
+		const hasPosts = Array.isArray(latestPosts) && latestPosts.length;
+
 		const inspectorControls = (
 			<InspectorControls>
 				<PanelBody
@@ -1384,7 +1386,6 @@ class PTAM_Custom_Posts extends Component {
 				</Fragment>
 			);
 		}
-		const hasPosts = Array.isArray(latestPosts) && latestPosts.length;
 		if (!hasPosts) {
 			return (
 				<Fragment>
@@ -1597,7 +1598,7 @@ class PTAM_Custom_Posts extends Component {
 													{userTaxonomiesArray.map(key => {
 														if (post.terms[key.value] !== false) {
 															return (
-																<div className="ptam-terms">
+																<div className="ptam-terms" key={key.value}>
 																	<span className="ptam-term-label">
 																		{key.label}:{" "}
 																	</span>

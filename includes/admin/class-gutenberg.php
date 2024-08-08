@@ -16,7 +16,11 @@ class Gutenberg {
 	 * Class initializer.
 	 */
 	public function run() {
-		add_filter( 'block_categories', array( $this, 'add_block_category' ), 10, 2 );
+		if ( version_compare( $GLOBALS['wp_version'], '5.8-alpha-1', '<' ) ) {
+			add_filter( 'block_categories', array( $this, 'add_block_category' ), 10, 2 );
+		} else {
+			add_filter( 'block_categories_all', array( $this, 'add_block_category' ), 10, 2 );
+		}
 	}
 
 	/**

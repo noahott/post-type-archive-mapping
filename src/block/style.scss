@@ -34,6 +34,8 @@
 		grid-template-columns: 1fr 1fr;
 		grid-template-rows: 1fr;
 		grid-gap: 0 2em;
+		column-gap: 2em;
+		line-height: 1.1;
 
 		article {
 			margin-bottom: 2.5em;
@@ -114,7 +116,7 @@
 		width: inherit;
 		border-radius: 0;
 	}
-	
+
 	.ptam-block-post-grid-title {
 		margin-top: 0;
 		margin-bottom: 15px;
@@ -393,6 +395,7 @@ button.ptam-media-alt-reset.components-button {
 		padding: 20px;
 		overflow: hidden;
 		transition: background-color 0.5s ease;
+		word-break: break-all;
 
 		/* Flex Fallback */
 		margin-left: 5px;

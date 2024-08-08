@@ -4,7 +4,7 @@ Plugin Name: Custom Query Blocks
 Plugin URI: https://mediaron.com/custom-query-blocks/
 Description: Map your post type and term archives to a page and use our Gutenberg blocks to show posts or terms.
 Author: MediaRon LLC
-Version: 5.0.5
+Version: 5.1.4
 Requires at least: 5.5
 Author URI: https://mediaron.com
 Contributors: MediaRon LLC
@@ -12,9 +12,16 @@ Text Domain: post-type-archive-mapping
 Domain Path: /languages
 Credit: Forked from https://github.com/bigwing/post-type-archive-mapping
 Credit: Gutenberg block based on Atomic Blocks
+Credit: Chris Logan for the initial idea.
+Credit: Paal Joaquim for UX and Issue Triage.
 */
-define( 'PTAM_VERSION', '5.0.5' );
+define( 'PTAM_VERSION', '5.1.4' );
+define( 'PTAM_FILE', __FILE__ );
+define( 'PTAM_SPONSORS_URL', 'https://github.com/sponsors/MediaRon' );
+
 require_once 'autoloader.php';
+
+use PTAM\Includes\Admin\Options as Options;
 
 /**
  * Main plugin class.
@@ -119,33 +126,42 @@ class PostTypeArchiveMapping {
 		$this->enqueue = new PTAM\Includes\Enqueue();
 		$this->enqueue->run();
 
-		// Register REST for the plugin.
-		$this->rest = new PTAM\Includes\Rest\Rest();
-		$this->rest->run();
+		// Run if blocks are enabled.
+		if ( false === Options::is_blocks_disabled() ) {
+			// Register REST for the plugin.
+			$this->rest = new PTAM\Includes\Rest\Rest();
+			$this->rest->run();
 
-		// Register Custom Post Type Block.
-		$this->cpt_block_one = new PTAM\Includes\Blocks\Custom_Post_Types\Custom_Post_Types();
-		$this->cpt_block_one->run();
+			// Register Custom Post Type Block.
+			$this->cpt_block_one = new PTAM\Includes\Blocks\Custom_Post_Types\Custom_Post_Types();
+			$this->cpt_block_one->run();
 
-		// Register Term Grid Block.
-		$this->term_grid = new PTAM\Includes\Blocks\Term_Grid\Terms();
-		$this->term_grid->run();
+			// Register Term Grid Block.
+			$this->term_grid = new PTAM\Includes\Blocks\Term_Grid\Terms();
+			$this->term_grid->run();
 
-		// Register Featured Post Block.
-		$this->featured_posts = new PTAM\Includes\Blocks\Featured_Posts\Posts();
-		$this->featured_posts->run();
+			// Register Featured Post Block.
+			$this->featured_posts = new PTAM\Includes\Blocks\Featured_Posts\Posts();
+			$this->featured_posts->run();
 
-		// Page columns.
-		$this->page_columns = new PTAM\Includes\Admin\Page_Columns();
-		$this->page_columns->run();
+			// Gutenberg Helper which sets the block categories.
+			$this->gutenberg = new PTAM\Includes\Admin\Gutenberg();
+			$this->gutenberg->run();
+		}
 
-		// Gutenberg Helper.
-		$this->gutenberg = new PTAM\Includes\Admin\Gutenberg();
-		$this->gutenberg->run();
+		// Run if page columns are enabled.
+		if ( false === Options::is_page_columns_disabled() && false === Options::is_archive_mapping_disabled() ) {
+			// Page columns.
+			$this->page_columns = new PTAM\Includes\Admin\Page_Columns();
+			$this->page_columns->run();
+		}
 
 		// Yoast Compatibility.
 		$this->yoast = new PTAM\Includes\Yoast();
 		$this->yoast->run();
+
+		// Admin settings.
+		$this->admin_settings = new PTAM\Includes\Admin\Admin_Settings();
 	} //end constructor
 
 	/**
@@ -159,14 +175,19 @@ class PostTypeArchiveMapping {
 	 * @see __construct
 	 */
 	public function init() {
-		// Admin Settings.
-		add_action( 'admin_init', array( $this, 'init_admin_settings' ) );
-		add_action( 'pre_get_posts', array( $this, 'maybe_override_archive' ) );
 
-		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+		// Check if archive mapping is disabled.
+		if ( false === Options::is_archive_mapping_disabled() ) {
+			// Archive mapping settings.
+			add_action( 'admin_init', array( $this, 'init_admin_settings' ) );
+			add_action( 'pre_get_posts', array( $this, 'maybe_override_archive' ) );
 
-		// 404 page detection.
-		add_filter( 'template_include', array( $this, 'maybe_force_404_template' ), 1 );
+			// Output admin notices once when saving archive mapping.
+			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+
+			// 404 page detection.
+			add_filter( 'template_include', array( $this, 'maybe_force_404_template' ), 1 );
+		}
 	} //end init
 
 	/**
@@ -490,7 +511,7 @@ class PostTypeArchiveMapping {
 					'selected'          => intval( $page_id_404 ),
 					'name'              => 'post-type-archive-mapping-404',
 					'value_field'       => 'ID',
-					'option_none_value' => esc_html__( 'Default', 'post-type-archive-mapping' ),
+					'option_none_value' => 'default',
 					'show_option_none'  => esc_html__( 'Default', 'post-type-archive-mapping' ),
 				)
 			);
@@ -518,7 +539,7 @@ class PostTypeArchiveMapping {
 				'selected'          => intval( $post_id ),
 				'name'              => 'term_post_type',
 				'value_field'       => 'ID',
-				'option_none_value' => esc_html__( 'Default', 'post-type-archive-mapping' ),
+				'option_none_value' => 'default',
 				'show_option_none'  => esc_html__( 'Default', 'post-type-archive-mapping' ),
 			)
 		);
@@ -535,7 +556,10 @@ class PostTypeArchiveMapping {
 	public function save_mapped_term( $term_id ) {
 		if ( current_user_can( 'edit_term', $term_id ) ) {
 			$maybe_post_id = filter_input( INPUT_POST, 'term_post_type' );
-			if ( $maybe_post_id ) {
+			if ( 'default' === $maybe_post_id ) {
+				delete_post_meta( $maybe_post_id, '_term_mapped' );
+				delete_term_meta( $term_id, '_term_archive_mapping' );
+			} elseif ( $maybe_post_id ) {
 				update_post_meta( $maybe_post_id, '_term_mapped', $term_id );
 				update_term_meta( $term_id, '_term_archive_mapping', $maybe_post_id );
 			}
