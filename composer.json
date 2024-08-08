@@ -1,0 +1,11 @@
+{
+	"name": "noahott/post-type-archive-mapping",
+	"description": "Map a page to the archive of your post types.",
+	"type": "wordpress-plugin",
+	"require": {
+		"php": ">8.0"
+	},
+	"suggest": {
+		"composer/installers": "~1.0"
+	}
+}
