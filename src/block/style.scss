@@ -101,6 +101,8 @@
 		margin: 10px 0;
 		img {
 			display: inline-block;
+			max-width: 100%;
+			height: auto;
 		}
 	}
 	.is-list .ptam-block-post-grid-image {
@@ -396,6 +398,7 @@ button.ptam-media-alt-reset.components-button {
 		overflow: hidden;
 		transition: background-color 0.5s ease;
 		word-break: break-all;
+		box-sizing: border-box;
 
 		/* Flex Fallback */
 		margin-left: 5px;

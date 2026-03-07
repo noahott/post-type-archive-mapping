@@ -38,3 +38,7 @@ DEVS
 Credit
 -------------
 Chris Logan for coming up with the idea.
+
+# Security Policy
+
+## Reporting Security Bugs Please report security bugs found in the Custom Query Blocks plugin's source code through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/report-preview/fe816fb9-144f-4dd1-998a-a465439d87e0?pin=IFOiN16e7SpHRdJF). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.

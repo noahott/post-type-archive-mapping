@@ -103,6 +103,10 @@ class Terms {
 			}
 		}
 
+		if ( empty( $terms_to_include ) ) {
+			return ob_get_clean();
+		}
+
 		// Build Query.
 		$query = array();
 		switch ( $order_by ) {
@@ -417,7 +421,7 @@ class Terms {
 
 		register_block_type(
 			Functions::get_plugin_dir( 'build/block/term-grid/block.json' ),
-			array( 'render_callback' => array( $this, 'output' ) ),
+			array( 'render_callback' => array( $this, 'term_grid' ) ),
 		);
 	}
 }

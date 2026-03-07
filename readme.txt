@@ -1,15 +1,15 @@
 === Custom Query Blocks ===
 Contributors: ronalfy, chrislogan, paaljoachim
 Tags: map pages, archives, post type block, 404 page, category grid
-Requires at least: 5.5
-Requires PHP: 5.6
-Tested up to: 6.1
-Stable tag: 5.1.4
+Requires at least: 6.5
+Requires PHP: 7.2
+Tested up to: 7.0
+Stable tag: 5.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://github.com/MediaRon/post-type-archive-mapping
 
-Map your post type and category archives to a page, and also map your 404 template to a page as well. Three helper blocks allow you to display a post grid, a term (category) grid, and posts by category.
+Map your archives to pages. Map 404 and term archives as well.
 
 == Description ==
 
@@ -17,7 +17,7 @@ A WordPress plugin for displaying posts and terms (e.g., categories) using a Gut
 
 Bonus: archive mapping.
 
-> Note: (2021-07-28) The blocks are deprecated as there are better custom query items and the new Query block in WordPress 5.8. Thank you for trying us out.
+> **Archive Pages Pro is here**: Map post types, terms, authors, and more to pages. <a href="https://dlxplugins.com/plugins/archive-pages-pro/">Learn more about Archive Pages Pro</a>
 
 <ul>
 	<li>Map your post type archives to a page for customization of the post type archive page.</li>
@@ -60,6 +60,14 @@ This plugin also allows you to map your term archives to a page. Just create a p
 === 404 Page Mapping ===
 
 This plugin allows you to map a page to your 404 template, so you can customize a 404 page as needed.
+
+=== Development is on GitHub ===
+
+<a href="https://github.com/MediaRon/post-type-archive-mapping">Development is on GitHub</a>
+
+=== Archive Pages Pro ===
+
+Archive Pages Pro has all the mapping feature of this plugin and more. You can map post types, terms, authors, and more to pages. <a href="https://dlxplugins.com/plugins/archive-pages-pro/">Learn more about Archive Pages Pro</a>
 
 == Installation ==
 
@@ -113,6 +121,43 @@ Yes, just post in the support forums here and I'll do my best to address your is
 5. Term archive option.
 
 == Changelog ==
+
+= 5.6.0 =
+* Released 2026-03-06
+* Security Fix: Finalizing resolving XSS issue with image alignment as reported by Patchstack.
+
+= 5.5.0 =
+* Released 2026-02-19
+* Security Fix: Resolving XSS issue with image alignment as reported by Patchstack.
+* Bug fix: Resolving PHP warnings when registering classes.
+* Enhancement/fix: Blocks are now compatible with Block.json v3.
+
+= 5.4.0 =
+* Released 2025-11-15
+* Resolving XSS vulnerability with title tag as reported via Patchstack. Ensuring compatibility with WP 6.9.
+
+= 5.3.1 =
+* Released 2024-08-27
+* Fixing some deprecation notices in blocks.
+* Adding information about new plugin Archive Pages Pro.
+* Misc. copy updates.
+
+= 5.3.0 =
+* Released 2024-07-10
+* Hardening REST APIs based on security report from the WordPress security team.
+* This is a security release and we recommend updating as soon as possible.
+
+= 5.2.0 =
+* Released 2024-03-17
+* Fixing a bug in the Term Grid block where the SearchListControl in Woo Components was throwing an error, so the component was reworked.
+
+= 5.1.6 =
+* Released 2023-03-17
+* Fixing a bug where the term grid didn't show on the frontend.
+
+= 5.1.5 =
+* Released 2022-10-02
+* Fixing a bug where a term would not save in the custom post types block.
 
 = 5.1.4 =
 * Released 2022-10-01
@@ -335,8 +380,5 @@ Yes, just post in the support forums here and I'll do my best to address your is
 
 == Upgrade Notice ==
 
-= 5.1.4 =
-Updated build scripts. Fixing schema errors when it comes to registering attributes.
-
-= 5.1.2 =
-Fixing block categories for WP 5.8.
+= 5.6.0 =
+Finalizing resolving XSS issue with image alignment as reported by Patchstack.

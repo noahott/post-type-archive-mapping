@@ -4,18 +4,20 @@ Plugin Name: Custom Query Blocks
 Plugin URI: https://mediaron.com/custom-query-blocks/
 Description: Map your post type and term archives to a page and use our Gutenberg blocks to show posts or terms.
 Author: MediaRon LLC
-Version: 5.1.4
-Requires at least: 5.5
+Version: 5.6.0
+Requires at least: 6.5
 Author URI: https://mediaron.com
 Contributors: MediaRon LLC
 Text Domain: post-type-archive-mapping
 Domain Path: /languages
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Credit: Forked from https://github.com/bigwing/post-type-archive-mapping
 Credit: Gutenberg block based on Atomic Blocks
 Credit: Chris Logan for the initial idea.
 Credit: Paal Joaquim for UX and Issue Triage.
 */
-define( 'PTAM_VERSION', '5.1.4' );
+define( 'PTAM_VERSION', '5.6.0' );
 define( 'PTAM_FILE', __FILE__ );
 define( 'PTAM_SPONSORS_URL', 'https://github.com/sponsors/MediaRon' );
 
@@ -123,45 +125,55 @@ class PostTypeArchiveMapping {
 		load_plugin_textdomain( 'post-type-archive-mapping', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 		// Register scripts/styles for the plugin.
-		$this->enqueue = new PTAM\Includes\Enqueue();
-		$this->enqueue->run();
+		$enqueue = new PTAM\Includes\Enqueue();
+		$enqueue->run();
 
 		// Run if blocks are enabled.
 		if ( false === Options::is_blocks_disabled() ) {
 			// Register REST for the plugin.
-			$this->rest = new PTAM\Includes\Rest\Rest();
-			$this->rest->run();
+			$rest = new PTAM\Includes\Rest\Rest();
+			$rest->run();
 
 			// Register Custom Post Type Block.
-			$this->cpt_block_one = new PTAM\Includes\Blocks\Custom_Post_Types\Custom_Post_Types();
-			$this->cpt_block_one->run();
+			$cpt_block_one = new PTAM\Includes\Blocks\Custom_Post_Types\Custom_Post_Types();
+			$cpt_block_one->run();
 
 			// Register Term Grid Block.
-			$this->term_grid = new PTAM\Includes\Blocks\Term_Grid\Terms();
-			$this->term_grid->run();
+			$term_grid = new PTAM\Includes\Blocks\Term_Grid\Terms();
+			$term_grid->run();
 
 			// Register Featured Post Block.
-			$this->featured_posts = new PTAM\Includes\Blocks\Featured_Posts\Posts();
-			$this->featured_posts->run();
+			$featured_posts = new PTAM\Includes\Blocks\Featured_Posts\Posts();
+			$featured_posts->run();
 
 			// Gutenberg Helper which sets the block categories.
-			$this->gutenberg = new PTAM\Includes\Admin\Gutenberg();
-			$this->gutenberg->run();
+			$gutenberg = new PTAM\Includes\Admin\Gutenberg();
+			$gutenberg->run();
 		}
+
+		/**
+		 * Filter to disable archive mapping.
+		 * This is useful if you want to use the blocks but not the archive mapping.
+		 *
+		 * @since 5.1.8
+		 */
+		$ptam_disabled = apply_filters( 'ptam_archive_mapping_disabled', false );
 
 		// Run if page columns are enabled.
-		if ( false === Options::is_page_columns_disabled() && false === Options::is_archive_mapping_disabled() ) {
+		if ( false === Options::is_page_columns_disabled() && false === Options::is_archive_mapping_disabled() && ! $ptam_disabled ) {
 			// Page columns.
-			$this->page_columns = new PTAM\Includes\Admin\Page_Columns();
-			$this->page_columns->run();
+			$page_columns = new PTAM\Includes\Admin\Page_Columns();
+			$page_columns->run();
 		}
 
-		// Yoast Compatibility.
-		$this->yoast = new PTAM\Includes\Yoast();
-		$this->yoast->run();
+		if ( ! $ptam_disabled ) {
+			// Yoast Compatibility.
+			$yoast = new PTAM\Includes\Yoast();
+			$yoast->run();
+		}
 
 		// Admin settings.
-		$this->admin_settings = new PTAM\Includes\Admin\Admin_Settings();
+		new PTAM\Includes\Admin\Admin_Settings();
 	} //end constructor
 
 	/**
@@ -176,8 +188,16 @@ class PostTypeArchiveMapping {
 	 */
 	public function init() {
 
+		/**
+		 * Filter to disable archive mapping.
+		 * This is useful if you want to use the blocks but not the archive mapping.
+		 *
+		 * @since 5.1.8
+		 */
+		$ptam_disabled = apply_filters( 'ptam_archive_mapping_disabled', false );
+
 		// Check if archive mapping is disabled.
-		if ( false === Options::is_archive_mapping_disabled() ) {
+		if ( false === Options::is_archive_mapping_disabled() && ! $ptam_disabled ) {
 			// Archive mapping settings.
 			add_action( 'admin_init', array( $this, 'init_admin_settings' ) );
 			add_action( 'pre_get_posts', array( $this, 'maybe_override_archive' ) );
